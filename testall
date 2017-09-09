@@ -1,0 +1,13 @@
+#!/bin/bash
+#usage: ./testall %prog_name% %input_folder%
+
+TIMEFORMAT=%R
+
+for filename in $2/*.in; do
+    printf "%s\n" "running on $filename"
+    outname="$filename.out"
+    touch $outname
+    runtime=`(time ./$1 < $filename > $outname) 2>&1`
+    excode=$?
+    printf "%s\n" "terminated with code = $excode; time elapsed = $runtime"
+done
