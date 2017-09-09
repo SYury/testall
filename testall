@@ -4,10 +4,22 @@
 TIMEFORMAT=%R
 
 for filename in $2/*.in; do
-    printf "%s\n" "running on $filename"
+    printf "%s" "running on "
+    printf "\033[1;37m%s\n" "$filename"
+    printf "\033[0m"
     outname="$filename.out"
     touch $outname
     runtime=`(time ./$1 < $filename > $outname) 2>&1`
     excode=$?
-    printf "%s\n" "terminated with code = $excode; time elapsed = $runtime"
+    printf "%s" "terminated with code = "
+    if [ $excode -eq 0 ];
+    then
+        printf "\033[1;32m%s" "$excode"
+    else
+        printf "\033[22;31m%s" "$excode"
+    fi
+    printf "\033[0m"
+    printf "%s" "; time elapsed = "
+    printf "\033[22;36m%s\n" "$runtime"
+    printf "\033[0m"
 done
