@@ -1,25 +1,54 @@
 #!/bin/bash
-#usage: ./testall %prog_name% %input_folder%
+#usage: ./testall -nocheck %prog_name% %input_folder% # to test without checker
+#		./testall -check %prog_name% %input_folder% # to test with checker
 
 TIMEFORMAT="%3U"
 
-for filename in $2/*.in; do
-    printf "%s" "running on "
-    printf "\033[1;37m%s\n" "$filename"
-    printf "\033[0m"
-    outname="$filename.out"
-    touch $outname
-    runtime=`(time ./$1 < $filename > $outname) 2>&1`
-    excode=$?
-    printf "%s" "terminated with code = "
-    if [ $excode -eq 0 ];
-    then
-        printf "\033[1;32m%s" "$excode"
-    else
-        printf "\033[22;31m%s" "$excode"
-    fi
-    printf "\033[0m"
-    printf "%s" "; time elapsed = "
-    printf "\033[22;36m%s\n" "$runtime"
-    printf "\033[0m"
-done
+function nocheck {
+	for filename in $2/*.in; do
+	    printf "%s" "running on "
+	    printf "\033[1;37m%s\n" "$filename"
+	    printf "\033[0m"
+	    outname="$filename.out"
+	    touch $outname
+	    runtime=`(time ./$1 < $filename > $outname) 2>&1`
+	    excode=$?
+	    printf "%s" "terminated with code = "
+	    if [ $excode -eq 0 ];
+	    then
+	        printf "\033[1;32m%s" "$excode"
+	    else
+	        printf "\033[22;31m%s" "$excode"
+	    fi
+	    printf "\033[0m"
+	    printf "%s" "; time elapsed = "
+	    printf "\033[22;36m%s\n" "$runtime"
+	    printf "\033[0m"
+	done
+}
+
+function check {
+	for filename in $2/*.in; do
+	    printf "%s" "running on "
+	    printf "\033[1;37m%s\n" "$filename"
+	    printf "\033[0m"
+	    outname="$filename.out"
+	    touch $outname
+	    runtime=`(time ./$1 < $filename > $outname) 2>&1`
+	    excode=$?
+	    printf "%s" "terminated with code = "
+	    if [ $excode -eq 0 ];
+	    then
+	        printf "\033[1;32m%s" "$excode"
+	    else
+	        printf "\033[22;31m%s" "$excode"
+	    fi
+	    printf "\033[0m"
+	    printf "%s" "; time elapsed = "
+	    printf "\033[22;36m%s\n" "$runtime"
+	    printf "\033[0m"
+		./$2/check $outname "$filename.ans"
+	done
+}
+
+[[ "$1" == "-check" ]] && check $2 $3 || nocheck
